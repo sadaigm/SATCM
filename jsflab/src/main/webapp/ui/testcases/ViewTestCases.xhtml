@@ -1,0 +1,216 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:f="http://java.sun.com/jsf/core"
+	template="/template/MyTemplate.xhtml">
+	<ui:define name="metadata">
+	</ui:define>
+	
+    <ui:define name="content">                        
+      <h1 class="page-header "> <i class="fa fa-tachometer"></i>Total Test Case Summary</h1>  
+      <h:form id="form" >
+    
+      <h:outputStylesheet>
+    
+     
+   .MyDataTableStyle table{
+     font-size:smaller;
+    
+     }
+     .viewMyDataTableStyle .ui-panelgrid-cell >span
+     {
+     
+     overflow: scroll;
+   word-break: break-all;
+     }
+      </h:outputStylesheet>
+        <br/>
+        
+         <h:panelGrid columns="3" style="text-align:right;">
+         <p:commandButton id="AddTestcase" type="submit" action="#{testcaseController.prepareCreate}" value="AddTestcase"  style="float:right;" icon="ui-icon-folder-collapsed" />
+        
+          
+         </h:panelGrid>
+          <h:panelGrid columns="4">
+ 
+
+<h:commandLink>
+<h:outputText  value="PDF" />
+<p:dataExporter type="pdf" target="TestcaseTable"  fileName="TestExecutionSummary_#{testcaseView.currentTimeStamp}"/>
+</h:commandLink>
+ 
+
+<h:commandLink>
+<h:outputText  value="XL" />
+<p:dataExporter type="xls" target="TestcaseTable"  fileName="TestExecutionSummary_#{testcaseView.currentTimeStamp}"/>
+</h:commandLink>
+ 
+
+<h:commandLink>
+<h:outputText  value="XML" />
+<p:dataExporter type="xml" target="TestcaseTable"  fileName="TestExecutionSummary_#{testcaseView.currentTimeStamp}"/>
+</h:commandLink>
+ 
+
+<h:commandLink>
+<h:outputText  value="CSV" />
+<p:dataExporter type="csv" target="TestcaseTable"  fileName="TestExecutionSummary_#{testcaseView.currentTimeStamp}"/>
+</h:commandLink>
+
+ 
+</h:panelGrid>
+ <h:panelGrid columns="1"  styleClass="MyDataTableStyle" >
+         <p:dataTable var="testcases" value="#{testcaseView.testcaseModel}" paginator="true" rows="10"  paginatorTemplate="{RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} {CurrentPageReport} {NextPageLink} {LastPageLink}"
+           rowsPerPageTemplate="5,10,15"  selectionMode="single"  selection="#{testcaseView.selectedTestcase}"  rowKey="#{testcases.scenarioID}" id="TestcaseTable"
+        widgetVar="runnerTable"  emptyMessage="No records found with given criteria" > 
+    <!-- <p:ajax event="rowSelect" listener="#{testcaseView.onRowSelect}" update=":form:carDetail" oncomplete="PF('carDialog').show()" />
+         --> 
+  
+
+  
+  
+  
+<f:facet name="header" >
+
+              <h:outputText value="Search all fields:  " />
+                <p:inputText id="globalFilter" onkeyup="PF('runnerTable').filter()" style="width:200px;" placeholder="Enter keyword"/>
+               <!--   <p:commandButton id="viewMultiple"  update=":form:carDetail" oncomplete="PF('carDialog').show()" value="View Multiple"  style="float:right;" icon="ui-icon-calculator">
+                
+                <f:setPropertyActionListener value="#{testcases}" target="#{testcaseView.selectedTestcase}" />
+                
+            </p:commandButton> -->
+              <p:commandButton id="toggler" type="button" value="Columns"  style="float:right;" icon="ui-icon-calculator" />
+                <p:columnToggler datasource="TestcaseTable" trigger="toggler" />
+             
+           
+        </f:facet>
+       
+        
+  <p:column  headerText="SNO"  sortBy="#{testcases.testcaseIdpk}" filterBy="#{testcases.testcaseIdpk}" filterMatchMode="contains">
+  <h:outputText value="#{testcases.testcaseIdpk}"/>
+
+  </p:column>
+  <p:column headerText="Tester" sortBy="#{testcases.tester}" filterBy="#{testcases.tester}">
+  <h:outputText value="#{testcases.tester}"/>
+  </p:column>
+  <p:column style="width:600px;" headerText="TestCaseID"  filterBy="#{testcases.expected_result}"  filterMatchMode="contains">
+  <h:outputText  value="#{testcases.expected_result}"/>
+  </p:column>
+  <p:column headerText="Status" filterBy="#{testcases.status}" filterMatchMode="contains">
+  <h:outputText value="#{testcases.status}"/>
+  </p:column>
+  <p:column headerText="date" filterBy="#{testcases.created_Date}" filterMatchMode="contains">
+  <h:outputText value="#{testcases.created_Date}"/>
+  </p:column>
+ <p:column headerText="View"  style="width:32px;text-align: center">
+             <p:commandButton update=":form:viewTestcases" oncomplete="PF('viewTestcaseDialog').show()" icon="ui-icon-search" title="View">
+                <f:setPropertyActionListener value="#{testcases}" target="#{testcaseView.selectedTestcase}" />
+            </p:commandButton>
+             <p:commandButton update=":form:editTestcases" oncomplete="PF('editTestcasesDialog').show()" icon="ui-icon-pencil" title="Edit">
+                <f:setPropertyActionListener value="#{testcases}" target="#{testcaseView.editselectedTestcase}" />
+            </p:commandButton>
+        </p:column>
+</p:dataTable>
+
+</h:panelGrid>
+
+
+<p:dialog header="Test Runner Details" widgetVar="editTestcasesDialog" resizable="false" style="width:1200px;height:400px">
+        <p:outputPanel id="editTestcases">
+      <!--    <ui:repeat value="#{testcaseView.selectedTestcases}" var="testcases"> -->
+            <p:panelGrid  columns="2"  rendered="#{not empty testcaseView.editselectedTestcase}" styleClass="MyDataTableStyle" style="width:1200px;height:400px">
+                <f:facet name="header">
+                    TestRunner
+                </f:facet>
+ 
+ 
+ 
+ 
+ 
+                <h:outputLabel value="SNO:" />
+                <h:inputText value="#{testcaseView.editselectedTestcase.testcaseIdpk}" />
+ 
+                <h:outputLabel value="tester" />
+                <h:inputText value="#{testcaseView.editselectedTestcase.tester}" />
+ 
+                <h:outputLabel value="TC Id" />
+                <h:inputText value="#{testcaseView.editselectedTestcase.expected_result}"/>
+ 
+                <h:outputLabel value="Status" />
+                <h:inputText value="#{testcaseView.editselectedTestcase.status}">
+                   
+                </h:inputText>
+                 <h:outputLabel value="DefectID" />
+                <h:inputText value="#{testcaseView.editselectedTestcase.test_Case_Flow}">
+                   
+                </h:inputText>
+                 <h:outputLabel value="BuildNo" />
+                <h:inputText value="#{testcaseView.editselectedTestcase.reference}">
+                     </h:inputText>
+                 <h:outputLabel value="Created Date" />
+                  <p:calendar id="editdatetime" maxdate="#{testcaseView.todatdt}" value="#{testcaseView.editselectedTestcase.created_Date}" pattern="MM/dd/yyyy HH:mm:ss" />
+               
+                 <h:outputLabel value="Comments" />
+                <p:inputTextarea rows="12" cols="40"  escape="false"  style="resize: none" autoResize="false" value="#{testcaseView.editselectedTestcase.comments}">
+                   
+                </p:inputTextarea>
+                <f:facet name="footer">
+	 	 <p:commandButton type="submit" update=":form:TestcaseTable" action="#{testcaseView.onClickSave}" value="Save" icon="ui-icon-check" />
+</f:facet>
+            </p:panelGrid>
+          <!--   </ui:repeat> -->
+        </p:outputPanel>
+    </p:dialog>
+    
+    
+    <p:dialog header="Test Runner Details" widgetVar="viewTestcaseDialog" resizable="false" >
+        <p:outputPanel id="viewTestcases" style="width:820px;height:400px">
+      <!--    <ui:repeat value="#{testcaseView.selectedTestcases}" var="testcases"> -->
+            <p:panelGrid  columns="2"  rendered="#{not empty testcaseView.selectedTestcase}" styleClass="viewMyDataTableStyle" style="width:820px;height:400px">
+                <f:facet name="header">
+                    TestRunner
+                </f:facet>
+ 
+                <h:outputLabel value="SNO:" />
+                <h:outputText style="width:120px" value="#{testcaseView.selectedTestcase.testcaseIdpk}" />
+ 
+                <h:outputLabel value="tester" />
+                <h:outputLabel value="#{testcaseView.selectedTestcase.tester}" />
+ 
+                <h:outputLabel value="TC Id" />
+                <h:outputText style="width:120px" value="#{testcaseView.selectedTestcase.expected_result}"/>
+ 
+                <h:outputLabel value="Status" />
+                <h:outputText value="#{testcaseView.selectedTestcase.status}">
+                   
+                </h:outputText>
+                 <h:outputLabel value="DefectID" />
+                <h:outputFormat value="#{testcaseView.selectedTestcase.test_Case_Flow}">
+                   
+                </h:outputFormat>
+                 <h:outputLabel value="BuildNo" />
+                <h:outputText value="#{testcaseView.selectedTestcase.reference}">
+                     </h:outputText>
+                 <h:outputLabel value="Created Date" />
+                 <h:outputText id="datetime" value="#{testcaseView.selectedTestcase.created_Date}" pattern="MM/dd/yyyy HH:mm:ss" />
+                 <!--  <p:calendar id="datetime" maxdate="#{testcaseView.todatdt}" value="#{testcaseView.selectedTestcase.created_Date}" pattern="MM/dd/yyyy HH:mm:ss" /> -->
+               
+                 <h:outputLabel value="Comments" />
+                <h:outputFormat id="comments" escape="false"   value="#{testcaseView.selectedTestcase.comments}">
+                   
+                </h:outputFormat>
+                <f:facet name="footer">
+	 	 <p:commandButton type="submit" update=":form:TestcaseTable" action="#{testcaseView.onClickSave}" value="Save" icon="ui-icon-check" />
+</f:facet>
+            </p:panelGrid>
+          <!--   </ui:repeat> -->
+        </p:outputPanel>
+    </p:dialog>
+    
+    
+     <br/>
+
+        </h:form>  
+    </ui:define>
+</ui:composition>        
